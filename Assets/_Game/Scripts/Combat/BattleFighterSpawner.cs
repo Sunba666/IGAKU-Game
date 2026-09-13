@@ -4,28 +4,40 @@
 public sealed class BattleFighterSpawner : MonoBehaviour
 {
     [Header("出生点")]
-    [SerializeField] private Transform player1Spawn;
-    [SerializeField] private Transform player2Spawn;
+    [SerializeField]
+    private Transform player1Spawn;
+
+    [SerializeField]
+    private Transform player2Spawn;
 
     [Header("直接运行战斗场景时的默认角色")]
     [SerializeField]
-    private CharacterSelectCharacterData defaultPlayer1Character;
+    private CharacterSelectCharacterData
+        defaultPlayer1Character;
 
     [SerializeField]
-    private CharacterSelectCharacterData defaultPlayer2Character;
+    private CharacterSelectCharacterData
+        defaultPlayer2Character;
 
     [Header("运行时角色父对象")]
-    [SerializeField] private Transform fighterRuntimeRoot;
+    [SerializeField]
+    private Transform fighterRuntimeRoot;
 
     [Header("系统引用")]
-    [SerializeField] private BattleRoundManager roundManager;
-    [SerializeField] private BattleHUDController battleHUD;
+    [SerializeField]
+    private BattleRoundManager roundManager;
+
+    [SerializeField]
+    private BattleHUDController battleHUD;
 
     private GameObject player1Instance;
     private GameObject player2Instance;
 
-    public GameObject Player1Instance => player1Instance;
-    public GameObject Player2Instance => player2Instance;
+    public GameObject Player1Instance =>
+        player1Instance;
+
+    public GameObject Player2Instance =>
+        player2Instance;
 
     private void Awake()
     {
@@ -34,54 +46,86 @@ public sealed class BattleFighterSpawner : MonoBehaviour
 
     private void SpawnSelectedFighters()
     {
-        CharacterSelectCharacterData player1Data =
-            LocalVersusSelectionStore.Player1Character != null
-                ? LocalVersusSelectionStore.Player1Character
-                : defaultPlayer1Character;
+        CharacterSelectCharacterData
+            player1Data =
+                LocalVersusSelectionStore
+                    .Player1Character != null
+                    ? LocalVersusSelectionStore
+                        .Player1Character
+                    : defaultPlayer1Character;
 
-        CharacterSelectCharacterData player2Data =
-            LocalVersusSelectionStore.Player2Character != null
-                ? LocalVersusSelectionStore.Player2Character
-                : defaultPlayer2Character;
+        CharacterSelectCharacterData
+            player2Data =
+                LocalVersusSelectionStore
+                    .Player2Character != null
+                    ? LocalVersusSelectionStore
+                        .Player2Character
+                    : defaultPlayer2Character;
 
-        if (!ValidateCharacterData(player1Data, "Player 1"))
-        {
-            return;
-        }
-
-        if (!ValidateCharacterData(player2Data, "Player 2"))
-        {
-            return;
-        }
-
-        FighterHealth player1Health = CreateFighter(
+        if (!ValidateCharacterData(
             player1Data,
-            player1Spawn,
-            LocalFighterController2D.LocalPlayerSlot.Player1,
-            true,
-            "P1"
-        );
+            "Player 1"
+        ))
+        {
+            return;
+        }
 
-        FighterHealth player2Health = CreateFighter(
+        if (!ValidateCharacterData(
             player2Data,
-            player2Spawn,
-            LocalFighterController2D.LocalPlayerSlot.Player2,
-            false,
-            "P2"
-        );
+            "Player 2"
+        ))
+        {
+            return;
+        }
 
-        if (player1Health == null || player2Health == null)
+        FighterHealth player1Health =
+            CreateFighter(
+                player1Data,
+                player1Spawn,
+
+                LocalFighterController2D
+                    .LocalPlayerSlot
+                    .Player1,
+
+                true,
+                "P1"
+            );
+
+        FighterHealth player2Health =
+            CreateFighter(
+                player2Data,
+                player2Spawn,
+
+                LocalFighterController2D
+                    .LocalPlayerSlot
+                    .Player2,
+
+                false,
+                "P2"
+            );
+
+        if (player1Health == null ||
+            player2Health == null)
         {
             Debug.LogError(
-                "BattleFighterSpawner：角色生成失败。",
+                "BattleFighterSpawner：" +
+                "角色生成失败。",
                 this
             );
 
             return;
         }
 
-        player1Instance = player1Health.gameObject;
-        player2Instance = player2Health.gameObject;
+        player1Instance =
+            player1Health.gameObject;
+
+        player2Instance =
+            player2Health.gameObject;
+
+        ConnectOpponents(
+            player1Health,
+            player2Health
+        );
 
         if (roundManager != null)
         {
@@ -93,7 +137,8 @@ public sealed class BattleFighterSpawner : MonoBehaviour
         else
         {
             Debug.LogError(
-                "BattleFighterSpawner 没有连接 Round Manager。",
+                "BattleFighterSpawner " +
+                "没有连接 Round Manager。",
                 this
             );
         }
@@ -110,23 +155,69 @@ public sealed class BattleFighterSpawner : MonoBehaviour
         else
         {
             Debug.LogError(
-                "BattleFighterSpawner 没有连接 Battle HUD。",
+                "BattleFighterSpawner " +
+                "没有连接 Battle HUD。",
                 this
             );
         }
 
         Debug.Log(
-            "战斗角色生成完成：P1 = " +
+            "战斗角色生成完成：" +
+            "P1 = " +
             player1Data.DisplayName +
             "，P2 = " +
             player2Data.DisplayName
         );
     }
 
+    private void ConnectOpponents(
+        FighterHealth player1Health,
+        FighterHealth player2Health
+    )
+    {
+        LocalFighterController2D
+            player1Controller =
+                player1Health.GetComponent<
+                    LocalFighterController2D
+                >();
+
+        LocalFighterController2D
+            player2Controller =
+                player2Health.GetComponent<
+                    LocalFighterController2D
+                >();
+
+        if (player1Controller == null ||
+            player2Controller == null)
+        {
+            Debug.LogError(
+                "无法连接对手：" +
+                "角色缺少 " +
+                "LocalFighterController2D。",
+                this
+            );
+
+            return;
+        }
+
+        player1Controller.ConfigureOpponent(
+            player2Health.transform
+        );
+
+        player2Controller.ConfigureOpponent(
+            player1Health.transform
+        );
+    }
+
     private FighterHealth CreateFighter(
-        CharacterSelectCharacterData characterData,
+        CharacterSelectCharacterData
+            characterData,
+
         Transform spawnPoint,
-        LocalFighterController2D.LocalPlayerSlot playerSlot,
+
+        LocalFighterController2D
+            .LocalPlayerSlot playerSlot,
+
         bool faceRight,
         string playerPrefix
     )
@@ -143,27 +234,36 @@ public sealed class BattleFighterSpawner : MonoBehaviour
             return null;
         }
 
-        GameObject instance = Instantiate(
-            characterData.FighterPrefab,
-            spawnPoint.position,
-            Quaternion.identity,
-            fighterRuntimeRoot
-        );
+        GameObject instance =
+            Instantiate(
+                characterData.FighterPrefab,
+                spawnPoint.position,
+                Quaternion.identity,
+                fighterRuntimeRoot
+            );
 
         instance.name =
-            playerPrefix + "_" + characterData.CharacterId;
+            playerPrefix +
+            "_" +
+            characterData.CharacterId;
 
-        LocalFighterController2D controller =
-            instance.GetComponent<LocalFighterController2D>();
+        LocalFighterController2D
+            controller =
+                instance.GetComponent<
+                    LocalFighterController2D
+                >();
 
         FighterHealth health =
-            instance.GetComponent<FighterHealth>();
+            instance.GetComponent<
+                FighterHealth
+            >();
 
         if (controller == null)
         {
             Debug.LogError(
                 instance.name +
-                " 缺少 LocalFighterController2D。",
+                " 缺少 " +
+                "LocalFighterController2D。",
                 instance
             );
 
@@ -192,7 +292,9 @@ public sealed class BattleFighterSpawner : MonoBehaviour
     }
 
     private bool ValidateCharacterData(
-        CharacterSelectCharacterData characterData,
+        CharacterSelectCharacterData
+            characterData,
+
         string playerLabel
     )
     {
@@ -201,14 +303,16 @@ public sealed class BattleFighterSpawner : MonoBehaviour
             Debug.LogError(
                 "BattleFighterSpawner：" +
                 playerLabel +
-                " 没有角色数据，也没有设置默认角色。",
+                " 没有角色数据，" +
+                "也没有设置默认角色。",
                 this
             );
 
             return false;
         }
 
-        if (characterData.FighterPrefab == null)
+        if (characterData.FighterPrefab ==
+            null)
         {
             Debug.LogError(
                 "BattleFighterSpawner：" +

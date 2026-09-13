@@ -9,31 +9,58 @@ public class LocalFighterController2D : MonoBehaviour
     }
 
     [Header("玩家")]
-    [SerializeField] private LocalPlayerSlot playerSlot = LocalPlayerSlot.Player1;
+    [SerializeField]
+    private LocalPlayerSlot playerSlot =
+        LocalPlayerSlot.Player1;
 
     [Header("对象引用")]
-    [SerializeField] private Transform visualRoot;
-    [SerializeField] private Animator animator;
-    [SerializeField] private Transform groundCheck;
+    [SerializeField]
+    private Transform visualRoot;
+
+    [SerializeField]
+    private Animator animator;
+
+    [SerializeField]
+    private Transform groundCheck;
 
     [Header("移动")]
-    [SerializeField] private float moveSpeed = 6f;
-    [SerializeField] private float jumpSpeed = 11f;
+    [SerializeField]
+    private float moveSpeed = 6f;
+
+    [SerializeField]
+    private float jumpSpeed = 11f;
 
     [Header("地面检测")]
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float groundCheckRadius = 0.12f;
+    [SerializeField]
+    private LayerMask groundLayer;
+
+    [SerializeField]
+    private float groundCheckRadius = 0.12f;
 
     [Header("攻击")]
-    [SerializeField] private float attackInputLockTime = 0.35f;
-    [SerializeField] private FighterCombat2D combat;
+
+    [SerializeField]
+    private FighterCombat2D combat;
+
+    [Header("自动面向对手")]
+    [SerializeField]
+    private bool autoFaceOpponent = true;
+
+    [SerializeField]
+    private bool lockFacingWhileAttacking = true;
+
+    [SerializeField, Min(0f)]
+    private float facingDeadZone = 0.05f;
 
     [Header("初始朝向")]
-    [SerializeField] private bool startFacingRight = true;
+    [SerializeField]
+    private bool startFacingRight = true;
 
     private Rigidbody2D body;
+    private Transform opponentTarget;
+
     private float horizontalInput;
-    private float attackLockTimer;
+
     private bool isGrounded;
     private bool facingRight;
 
@@ -49,21 +76,32 @@ public class LocalFighterController2D : MonoBehaviour
     private static readonly int AttackLightHash =
         Animator.StringToHash("AttackLight");
 
+    public bool FacingRight =>
+        facingRight;
+
+    public Transform OpponentTarget =>
+        opponentTarget;
+
     private void Awake()
     {
-        body = GetComponent<Rigidbody2D>();
+        body =
+            GetComponent<Rigidbody2D>();
 
         if (combat == null)
         {
-            combat = GetComponent<FighterCombat2D>();
+            combat =
+                GetComponent<FighterCombat2D>();
         }
 
         if (animator == null)
         {
-            animator = GetComponentInChildren<Animator>();
+            animator =
+                GetComponentInChildren<Animator>();
         }
 
-        facingRight = startFacingRight;
+        facingRight =
+            startFacingRight;
+
         ApplyFacingDirection();
     }
 
@@ -71,12 +109,9 @@ public class LocalFighterController2D : MonoBehaviour
     {
         ReadInput();
         CheckGround();
+        UpdateFacingDirection();
         UpdateAnimator();
 
-        if (attackLockTimer > 0f)
-        {
-            attackLockTimer -= Time.deltaTime;
-        }
     }
 
     private void FixedUpdate()
@@ -88,7 +123,8 @@ public class LocalFighterController2D : MonoBehaviour
     {
         horizontalInput = 0f;
 
-        if (playerSlot == LocalPlayerSlot.Player1)
+        if (playerSlot ==
+            LocalPlayerSlot.Player1)
         {
             if (Input.GetKey(KeyCode.A))
             {
@@ -112,35 +148,40 @@ public class LocalFighterController2D : MonoBehaviour
         }
         else
         {
-            if (Input.GetKey(KeyCode.LeftArrow))
+            if (Input.GetKey(
+                KeyCode.LeftArrow
+            ))
             {
                 horizontalInput -= 1f;
             }
 
-            if (Input.GetKey(KeyCode.RightArrow))
+            if (Input.GetKey(
+                KeyCode.RightArrow
+            ))
             {
                 horizontalInput += 1f;
             }
 
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+            if (Input.GetKeyDown(
+                KeyCode.UpArrow
+            ))
             {
                 TryJump();
             }
 
-            if (Input.GetKeyDown(KeyCode.Keypad1))
+            if (Input.GetKeyDown(
+                KeyCode.Keypad1
+            ))
             {
                 TryAttackLight();
             }
         }
 
-        if (attackLockTimer > 0f)
+        if (combat != null && combat.IsAttacking)
         {
             horizontalInput = 0f;
         }
-
-        UpdateFacingDirection();
     }
-
     private void MoveCharacter()
     {
         if (body == null)
@@ -148,41 +189,62 @@ public class LocalFighterController2D : MonoBehaviour
             return;
         }
 
-        Vector2 currentVelocity = GetVelocity();
-        currentVelocity.x = horizontalInput * moveSpeed;
+        Vector2 currentVelocity =
+            GetVelocity();
+
+        currentVelocity.x =
+            horizontalInput *
+            moveSpeed;
+
         SetVelocity(currentVelocity);
     }
 
     private void TryJump()
     {
-        if (!isGrounded || body == null)
+        if (!isGrounded ||
+            body == null)
         {
             return;
         }
 
-        Vector2 currentVelocity = GetVelocity();
-        currentVelocity.y = jumpSpeed;
+        Vector2 currentVelocity =
+            GetVelocity();
+
+        currentVelocity.y =
+            jumpSpeed;
+
         SetVelocity(currentVelocity);
     }
 
     private void TryAttackLight()
     {
-        if (animator == null || attackLockTimer > 0f)
+        if (animator == null ||
+            combat == null)
         {
             return;
         }
 
-        animator.ResetTrigger(AttackLightHash);
-        animator.SetTrigger(AttackLightHash);
-
-        if (combat != null)
+        if (combat.IsAttacking)
         {
-            combat.BeginLightAttack();
+            return;
         }
 
-        attackLockTimer = attackInputLockTime;
-    }
+        bool attackStarted =
+            combat.BeginLightAttack();
 
+        if (!attackStarted)
+        {
+            return;
+        }
+
+        animator.ResetTrigger(
+            AttackLightHash
+        );
+
+        animator.SetTrigger(
+            AttackLightHash
+        );
+    }
     private void CheckGround()
     {
         if (groundCheck == null)
@@ -191,39 +253,96 @@ public class LocalFighterController2D : MonoBehaviour
             return;
         }
 
-        isGrounded = Physics2D.OverlapCircle(
-            groundCheck.position,
-            groundCheckRadius,
-            groundLayer
-        ) != null;
+        isGrounded =
+            Physics2D.OverlapCircle(
+                groundCheck.position,
+                groundCheckRadius,
+                groundLayer
+            ) != null;
     }
 
     private void UpdateAnimator()
     {
-        if (animator == null || body == null)
+        if (animator == null ||
+            body == null)
         {
             return;
         }
 
-        Vector2 currentVelocity = GetVelocity();
+        Vector2 currentVelocity =
+            GetVelocity();
 
-        animator.SetFloat(SpeedHash, Mathf.Abs(currentVelocity.x));
-        animator.SetFloat(VerticalSpeedHash, currentVelocity.y);
-        animator.SetBool(GroundedHash, isGrounded);
+        animator.SetFloat(
+            SpeedHash,
+            Mathf.Abs(currentVelocity.x)
+        );
+
+        animator.SetFloat(
+            VerticalSpeedHash,
+            currentVelocity.y
+        );
+
+        animator.SetBool(
+            GroundedHash,
+            isGrounded
+        );
     }
 
     private void UpdateFacingDirection()
     {
-        if (horizontalInput > 0.01f && !facingRight)
+        if (autoFaceOpponent &&
+            opponentTarget != null)
         {
-            facingRight = true;
-            ApplyFacingDirection();
+            if (lockFacingWhileAttacking &&
+                combat != null &&
+                combat.IsAttacking)
+            {
+                return;
+            }
+
+            float opponentDirection =
+                opponentTarget.position.x -
+                transform.position.x;
+
+            if (Mathf.Abs(opponentDirection) <=
+                facingDeadZone)
+            {
+                return;
+            }
+
+            SetFacingDirection(
+                opponentDirection > 0f
+            );
+
+            return;
         }
-        else if (horizontalInput < -0.01f && facingRight)
+
+        // 没有连接对手时使用原来的移动朝向，
+        // 方便单独测试角色预制体。
+        if (horizontalInput > 0.01f)
         {
-            facingRight = false;
-            ApplyFacingDirection();
+            SetFacingDirection(true);
         }
+        else if (horizontalInput < -0.01f)
+        {
+            SetFacingDirection(false);
+        }
+    }
+
+    private void SetFacingDirection(
+        bool shouldFaceRight
+    )
+    {
+        if (facingRight ==
+            shouldFaceRight)
+        {
+            return;
+        }
+
+        facingRight =
+            shouldFaceRight;
+
+        ApplyFacingDirection();
     }
 
     private void ApplyFacingDirection()
@@ -233,11 +352,19 @@ public class LocalFighterController2D : MonoBehaviour
             return;
         }
 
-        Vector3 visualScale = visualRoot.localScale;
-        visualScale.x = Mathf.Abs(visualScale.x) *
-                        (facingRight ? 1f : -1f);
+        Vector3 visualScale =
+            visualRoot.localScale;
 
-        visualRoot.localScale = visualScale;
+        // 只改变 X 的正负，不改变角色原本尺寸。
+        float absoluteScaleX =
+            Mathf.Abs(visualScale.x);
+
+        visualScale.x =
+            absoluteScaleX *
+            (facingRight ? 1f : -1f);
+
+        visualRoot.localScale =
+            visualScale;
     }
 
     private Vector2 GetVelocity()
@@ -249,7 +376,9 @@ public class LocalFighterController2D : MonoBehaviour
 #endif
     }
 
-    private void SetVelocity(Vector2 value)
+    private void SetVelocity(
+        Vector2 value
+    )
     {
 #if UNITY_6000_0_OR_NEWER
         body.linearVelocity = value;
@@ -257,30 +386,54 @@ public class LocalFighterController2D : MonoBehaviour
         body.velocity = value;
 #endif
     }
+
     public void ConfigurePlayer(
-    LocalPlayerSlot slot,
-    bool shouldFaceRight
-)
+        LocalPlayerSlot slot,
+        bool shouldFaceRight
+    )
     {
         playerSlot = slot;
-        startFacingRight = shouldFaceRight;
+        startFacingRight =
+            shouldFaceRight;
 
-        ResetForRound(shouldFaceRight);
+        ResetForRound(
+            shouldFaceRight
+        );
     }
-    public void ResetForRound(bool shouldFaceRight)
+
+    public void ConfigureOpponent(
+        Transform newOpponent
+    )
     {
+        opponentTarget =
+            newOpponent;
+
+        UpdateFacingDirection();
+    }
+
+    public void ResetForRound(
+        bool shouldFaceRight
+    )
+    {
+        if (combat != null)
+        {
+            combat.CancelCurrentAttack();
+        }
+
         horizontalInput = 0f;
-        attackLockTimer = 0f;
-        facingRight = shouldFaceRight;
+        facingRight =
+            shouldFaceRight;
 
         ApplyFacingDirection();
 
         if (body != null)
         {
 #if UNITY_6000_0_OR_NEWER
-        body.linearVelocity = Vector2.zero;
+            body.linearVelocity =
+                Vector2.zero;
 #else
-            body.velocity = Vector2.zero;
+            body.velocity =
+                Vector2.zero;
 #endif
 
             body.angularVelocity = 0f;
@@ -288,9 +441,19 @@ public class LocalFighterController2D : MonoBehaviour
 
         if (animator != null)
         {
-            animator.ResetTrigger(AttackLightHash);
-            animator.SetFloat(SpeedHash, 0f);
-            animator.SetFloat(VerticalSpeedHash, 0f);
+            animator.ResetTrigger(
+                AttackLightHash
+            );
+
+            animator.SetFloat(
+                SpeedHash,
+                0f
+            );
+
+            animator.SetFloat(
+                VerticalSpeedHash,
+                0f
+            );
         }
     }
 
@@ -301,10 +464,21 @@ public class LocalFighterController2D : MonoBehaviour
             return;
         }
 
-        Gizmos.color = Color.yellow;
+        Gizmos.color =
+            Color.yellow;
+
         Gizmos.DrawWireSphere(
             groundCheck.position,
             groundCheckRadius
         );
+    }
+
+    private void OnValidate()
+    {
+        facingDeadZone =
+            Mathf.Max(
+                0f,
+                facingDeadZone
+            );
     }
 }
