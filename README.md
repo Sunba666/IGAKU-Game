@@ -39,3 +39,18 @@ Packages/                   # 依赖清单
 
 - 本仓库只收录源码与游戏资源，`Library/`、`Temp/`、`Logs/`、`UserSettings/`
   等引擎自动生成目录已在 `.gitignore` 中排除，克隆后用引擎打开会自动重建。
+
+## 声明 / Notice
+
+- 本项目为**学习与研究性质的非商业同人作品**，与 miHoYo / HOYOVERSE 无任何关联，
+  未经官方授权或认可。
+- 游戏中的角色名称、立绘、逐帧动画及关卡素材等来源于《崩坏：星穹铁道》
+  (Honkai: Star Rail)，其**版权归 miHoYo / HOYOVERSE 所有**，仅作学习交流使用，
+  不得用于商业用途。
+- 本仓库的**源代码**采用 [MIT License](LICENSE) 授权；上述第三方素材**不在**
+  MIT 授权范围内。
+
+> This is a non-commercial fan project for learning purposes, not affiliated with
+> or endorsed by miHoYo / HOYOVERSE. Character artwork and other assets derived
+> from Honkai: Star Rail remain the property of miHoYo / HOYOVERSE and are not
+> covered by the MIT license that applies to the source code.
