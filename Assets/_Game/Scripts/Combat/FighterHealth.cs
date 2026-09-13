@@ -218,13 +218,32 @@ public class FighterHealth : MonoBehaviour
 
     public void ResetHealth()
     {
+        if (restoreControlRoutine != null)
+        {
+            StopCoroutine(restoreControlRoutine);
+            restoreControlRoutine = null;
+        }
+
         currentHealth = maxHealth;
         invincibleTimer = 0f;
+
+        if (body != null)
+        {
+#if UNITY_6000_0_OR_NEWER
+        body.linearVelocity = Vector2.zero;
+#else
+            body.velocity = Vector2.zero;
+#endif
+
+            body.angularVelocity = 0f;
+        }
 
         if (animator != null)
         {
             animator.ResetTrigger(HitHash);
             animator.SetBool(KOHash, false);
+            animator.Play("Idle", 0, 0f);
+            animator.Update(0f);
         }
 
         if (controller != null)

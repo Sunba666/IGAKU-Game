@@ -16,6 +16,8 @@ public sealed class CharacterSelectCharacterData : ScriptableObject
     [Header("Availability")]
     [Tooltip("只有角色的战斗逻辑、动画和场景数据都已接入后才勾选。未勾选时会显示黑色遮罩并禁止选择。")]
     [SerializeField] private bool implemented;
+    [Header("Battle")]
+    [SerializeField] private GameObject fighterPrefab;
 
     [Header("Optional Description")]
     [SerializeField] private string combatType;
@@ -27,6 +29,7 @@ public sealed class CharacterSelectCharacterData : ScriptableObject
     public Sprite Portrait => portrait;
     public Sprite LargePreview => largePreview != null ? largePreview : portrait;
     public bool Implemented => implemented;
+    public GameObject FighterPrefab => fighterPrefab;
     public string CombatType => combatType;
     public string Description => description;
 }

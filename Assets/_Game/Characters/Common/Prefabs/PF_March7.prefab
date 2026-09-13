@@ -109,12 +109,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5692546525601458909, guid: c10189eea0a92214bb21090b73e17f34, type: 3}
+      propertyPath: hitStopDuration
+      value: 0.045
+      objectReference: {fileID: 0}
+    - target: {fileID: 5692546525601458909, guid: c10189eea0a92214bb21090b73e17f34, type: 3}
       propertyPath: lightAttackSize.x
       value: 2.21
       objectReference: {fileID: 0}
     - target: {fileID: 5692546525601458909, guid: c10189eea0a92214bb21090b73e17f34, type: 3}
       propertyPath: lightAttackSize.y
       value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5692546525601458909, guid: c10189eea0a92214bb21090b73e17f34, type: 3}
+      propertyPath: cameraShakeDuration
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 5692546525601458909, guid: c10189eea0a92214bb21090b73e17f34, type: 3}
+      propertyPath: cameraShakeStrength
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 6280409547024253342, guid: c10189eea0a92214bb21090b73e17f34, type: 3}
       propertyPath: m_LocalPosition.x

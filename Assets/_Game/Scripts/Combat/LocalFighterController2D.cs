@@ -257,6 +257,42 @@ public class LocalFighterController2D : MonoBehaviour
         body.velocity = value;
 #endif
     }
+    public void ConfigurePlayer(
+    LocalPlayerSlot slot,
+    bool shouldFaceRight
+)
+    {
+        playerSlot = slot;
+        startFacingRight = shouldFaceRight;
+
+        ResetForRound(shouldFaceRight);
+    }
+    public void ResetForRound(bool shouldFaceRight)
+    {
+        horizontalInput = 0f;
+        attackLockTimer = 0f;
+        facingRight = shouldFaceRight;
+
+        ApplyFacingDirection();
+
+        if (body != null)
+        {
+#if UNITY_6000_0_OR_NEWER
+        body.linearVelocity = Vector2.zero;
+#else
+            body.velocity = Vector2.zero;
+#endif
+
+            body.angularVelocity = 0f;
+        }
+
+        if (animator != null)
+        {
+            animator.ResetTrigger(AttackLightHash);
+            animator.SetFloat(SpeedHash, 0f);
+            animator.SetFloat(VerticalSpeedHash, 0f);
+        }
+    }
 
     private void OnDrawGizmosSelected()
     {

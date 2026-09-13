@@ -50,6 +50,39 @@ public class BattleHUDController : MonoBehaviour
         UpdateTimer();
     }
 
+    public void ConfigurePlayers(
+    FighterHealth newPlayer1Health,
+    FighterHealth newPlayer2Health,
+    string newPlayer1Name,
+    string newPlayer2Name
+)
+    {
+        player1Health = newPlayer1Health;
+        player2Health = newPlayer2Health;
+
+        if (!string.IsNullOrEmpty(newPlayer1Name))
+        {
+            player1Name = newPlayer1Name;
+        }
+
+        if (!string.IsNullOrEmpty(newPlayer2Name))
+        {
+            player2Name = newPlayer2Name;
+        }
+
+        if (player1NameText != null)
+        {
+            player1NameText.text = player1Name;
+        }
+
+        if (player2NameText != null)
+        {
+            player2NameText.text = player2Name;
+        }
+
+        SetHealthBarsImmediately();
+    }
+
     public void ResetHUD()
     {
         remainingTime = Mathf.Max(0f, timeLimit);

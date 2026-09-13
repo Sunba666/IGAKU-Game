@@ -17,5 +17,6 @@ MonoBehaviour:
   portrait: {fileID: 21300000, guid: 2b67bde064a40784190c35ca57dff165, type: 3}
   largePreview: {fileID: 21300000, guid: bd03abcbd6d1ae54ea4ac62162c27025, type: 3}
   implemented: 1
+  fighterPrefab: {fileID: 8667545740747532522, guid: 70cd849558b6bc04bbf9e7ddcb637817, type: 3}
   combatType: PHYSICAL / MELEE
   description: 

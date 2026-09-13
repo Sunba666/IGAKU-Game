@@ -17,5 +17,6 @@ MonoBehaviour:
   portrait: {fileID: 21300000, guid: 04c43f41c1379104dae200ced883718a, type: 3}
   largePreview: {fileID: 21300000, guid: c48f55c66efe9ee4b9fbee7a58007dd6, type: 3}
   implemented: 1
+  fighterPrefab: {fileID: 2724386838725366887, guid: a681c602eee780d478910da08434a4be, type: 3}
   combatType: ICE / RANGED
   description: A ranged fighter who controls the battlefield with ice attacks.
