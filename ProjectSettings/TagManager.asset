@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags: []
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Ground
+  - Water
+  - UI
+  - Fighter
+  - Hurtbox
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Stage
+    uniqueID: 3491826021
+    locked: 0
+  - name: Fighters
+    uniqueID: 2977685617
+    locked: 0
+  - name: Effects
+    uniqueID: 4255617567
+    locked: 0
+  - name: UI
+    uniqueID: 4182292975
+    locked: 0

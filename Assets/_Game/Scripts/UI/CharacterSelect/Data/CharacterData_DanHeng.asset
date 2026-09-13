@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdcc34b030a8c92429d07a91349b5903, type: 3}
+  m_Name: CharacterData_DanHeng
+  m_EditorClassIdentifier: 
+  characterId: dan_heng
+  displayName: DAN HENG
+  portrait: {fileID: 21300000, guid: caaa63f46f8ef994aa35af76b10b79c1, type: 3}
+  largePreview: {fileID: 21300000, guid: 4107d57e76a6c9846a7a42328d97d452, type: 3}
+  implemented: 0
+  combatType: SPEAR / MID RANGE
+  description: 
